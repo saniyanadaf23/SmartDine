@@ -20,12 +20,12 @@ export const sendOtp = async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "vaishnavilakkundi@gmail.com", // Gmail address
-      pass: "jjbx coxm uihe bcme",         // App password (not regular Gmail password)
+      user: "nadafsaniya23@gmail.com", // YOUR Gmail address
+      pass: "wdqq xqop udtz gwaf",  // your Gmail **App Password** (not normal password)
     },
-    secure: true, // Use secure connection
-    logger: true, // Enable logging for debugging purposes (can be removed in production)
-    debug: true,  // Enable debugging output
+    secure: true,
+    logger: true, 
+    debug: true,
     tls: {
       rejectUnauthorized: false,
     },
@@ -33,7 +33,7 @@ export const sendOtp = async (req, res) => {
 
   // Define the email options
   const mailOptions = {
-    from: '"SmartDine" <vaishnavilakkundi@gmail.com>', // From field, using your Gmail address
+    from: '"SmartDine" <nadafsaniya23@gmail.com>', // From field, your Gmail address
     to: email, // The recipient email
     subject: "Your SmartDine OTP Code",
     text: `Your OTP code is: ${otp}. It will expire in 5 minutes.`, // The email body
@@ -46,7 +46,6 @@ export const sendOtp = async (req, res) => {
   } catch (error) {
     console.error("Error sending email:", error);
     
-    // Return the error response
     if (error.response) {
       res.status(500).json({ message: `Failed to send OTP: ${error.response}` });
     } else {

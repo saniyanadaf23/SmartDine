@@ -57,21 +57,23 @@ export const update_reservation = async (req, res, next) => {
   }
 };
 
-export const delete_reservation = async (req, res, next) => {
+export const delete_reservation = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { firstName, phone } = req.body;
 
-    const reservation = await Reservation.findByIdAndDelete(id);
-
-    if (!reservation) {
-      return next(new ErrorHandler("❌ Reservation not found", 404));
+    if (!firstName || !phone) {
+      return res.status(400).json({ success: false, message: "First name and phone are required" });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "🗑️ Reservation deleted successfully",
-    });
+    const reservation = await Reservation.findOneAndDelete({ firstName, phone });
+
+    if (!reservation) {
+      return res.status(404).json({ success: false, message: "Reservation not found" });
+    }
+
+    res.json({ success: true, message: "Reservation deleted successfully" });
   } catch (error) {
-    next(error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+

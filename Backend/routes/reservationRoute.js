@@ -11,6 +11,8 @@ const router = express.Router();
 router.post("/send", send_reservation);
 router.get("/", get_reservations);
 router.put("/:id", update_reservation);
-router.delete("/:id", delete_reservation);
+
+// ✅ new delete route using body (firstName + phone)
+router.delete("/delete", delete_reservation);
 
 export default router;

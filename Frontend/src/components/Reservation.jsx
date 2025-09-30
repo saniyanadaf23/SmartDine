@@ -10,17 +10,26 @@ const Reservation = () => {
   const [email, setEmail] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [phone, setPhone] = useState("");  // 🔧 Fixed phone state
+  const [phone, setPhone] = useState("");
   const [order, setOrder] = useState("");
+  const [partySize, setPartySize] = useState(1); // 🚀 Added party size
+
   const navigate = useNavigate();
 
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+
   const handleReservation = async (e) => {
-    e.preventDefault(); // Prevent page refresh
+    e.preventDefault();
+
+    if (partySize < 1 || partySize > 10) {
+      toast.error("Party size must be between 1 and 10 members.");
+      return;
+    }
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/reservations/send",  // 🔧 Fixed API endpoint
-        { firstName, lastName, email, phone, date, time, order },
+        "http://localhost:5000/api/reservations/send",
+        { firstName, lastName, email, phone, date, time, order, partySize },
         {
           headers: {
             "Content-Type": "application/json",
@@ -35,7 +44,8 @@ const Reservation = () => {
       setTime("");
       setDate("");
       setOrder("");
-      navigate("/success");  // Navigate to success page after reservation
+      setPartySize(1); // Reset party size
+      navigate("/success");
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
     }
@@ -51,29 +61,35 @@ const Reservation = () => {
           <div className="reservation_form_box">
             <h1>MAKE A RESERVATION</h1>
             <p>For Further Questions, Please Call</p>
-            <form onSubmit={handleReservation}> {/* 🔧 Fixed form submission */}
+            <form onSubmit={handleReservation}>
               <div>
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                />
-              </div>
+  <input
+    type="text"
+    placeholder="First Name"
+    value={firstName}
+    onChange={(e) => setFirstName(e.target.value)}
+    minLength="2"
+    maxLength="10"
+    required
+  />
+  <input
+    type="text"
+    placeholder="Last Name"
+    value={lastName}
+    onChange={(e) => setLastName(e.target.value)}
+    minLength="2"
+    maxLength="10"
+    required
+  />
+</div>
+
               <div>
                 <input
                   type="date"
                   placeholder="Date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
+                  min={tomorrow}
                   required
                 />
                 <input
@@ -94,14 +110,23 @@ const Reservation = () => {
                   required
                 />
                 <input
-                  type="tel"  // 🔧 Changed to tel for better validation
+                  type="tel"
                   placeholder="Phone"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                   required
                 />
               </div>
               <div>
+                <input
+                  type="number"
+                  placeholder="Party Size (1-10)"
+                  min="1"
+                  max="10"
+                  value={partySize}
+                  onChange={(e) => setPartySize(Number(e.target.value))}
+                  required
+                />
                 <input
                   type="text"
                   placeholder="Order"
@@ -110,7 +135,7 @@ const Reservation = () => {
                   required
                 />
               </div>
-              <button type="submit"> {/* 🔧 Removed onClick, form handles it */}
+              <button type="submit">
                 RESERVE NOW{" "}
                 <span>
                   <HiOutlineArrowNarrowRight />
